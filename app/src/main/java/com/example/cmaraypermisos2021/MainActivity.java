@@ -10,17 +10,18 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private static final int VENGO_DE_CAMARA = 1;
     Button buttonHacerFoto;
-ImageView imageView;
+    ImageView imageView;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode ==VENGO_DE_CAMARA){
+        if (requestCode == VENGO_DE_CAMARA) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(bitmap);
         }
@@ -38,7 +39,11 @@ ImageView imageView;
             public void onClick(View view) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                startActivityForResult(intent,VENGO_DE_CAMARA);
+                if (intent.resolveActivity(getPackageManager()) != null) { //Debo permitir la consulta en el android manifest
+                    startActivityForResult(intent, VENGO_DE_CAMARA);
+                } else {
+                    Toast.makeText(MainActivity.this, "Necesitas instalar o tener una cámara.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
