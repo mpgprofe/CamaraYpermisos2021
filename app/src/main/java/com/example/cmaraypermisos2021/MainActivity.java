@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int VENGO_DE_CAMARA = 1;
     private static final int PEDI_PERMISO_ESCRITURA = 1;
     private static final int VENGO_DE_CAMARA_CON_CALIDAD = 2;
-    Button buttonHacerFoto, buttonHacerFotoCalidad;
+    private static final int VENGO_DE_GALERIA = 3;
+    Button buttonHacerFoto, buttonHacerFotoCalidad, buttonDeGaleria;
     ImageView imageView;
     private File fichero;
 
@@ -78,7 +79,16 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             imageView.setImageBitmap(bitmap);
         } else if (requestCode == VENGO_DE_CAMARA_CON_CALIDAD) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
+            if (resultCode == RESULT_OK) {
+                imageView.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
+
+            }else{
+                fichero.delete();
+
+            }
+        } else if (requestCode == VENGO_DE_GALERIA){
+            Uri imageUri = data.getData();
+            imageView.setImageURI(imageUri);
         }
     }
 
@@ -103,6 +113,16 @@ public class MainActivity extends AppCompatActivity {
         buttonHacerFoto = findViewById(R.id.buttonHacerFoto);
         imageView = findViewById(R.id.imageView);
         buttonHacerFotoCalidad = findViewById(R.id.buttonHacerFotoCalidad);
+        buttonDeGaleria = findViewById(R.id.buttonGalería);
+
+        buttonDeGaleria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galería = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+
+                startActivityForResult(Intent.createChooser(galería, "Selecciona galería"), VENGO_DE_GALERIA);
+            }
+        });
 
         buttonHacerFoto.setOnClickListener(new View.OnClickListener() {
             @Override

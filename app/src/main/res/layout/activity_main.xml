@@ -9,8 +9,10 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="167dp"
         android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/buttonGalería"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,4 +37,15 @@
         android:text="Hacer foto con Calidad"
         app:layout_constraintStart_toStartOf="@+id/buttonHacerFoto"
         app:layout_constraintTop_toBottomOf="@+id/buttonHacerFoto" />
+
+    <Button
+        android:id="@+id/buttonGalería"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="216dp"
+        android:text="Coger de la Galería"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/buttonHacerFotoCalidad"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
