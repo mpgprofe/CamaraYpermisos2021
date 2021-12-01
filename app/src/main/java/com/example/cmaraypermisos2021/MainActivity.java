@@ -14,6 +14,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PEDI_PERMISO_ESCRITURA = 1;
     private static final int VENGO_DE_CAMARA_CON_CALIDAD = 2;
     private static final int VENGO_DE_GALERIA = 3;
-    Button buttonHacerFoto, buttonHacerFotoCalidad, buttonDeGaleria;
+    Button buttonHacerFoto, buttonHacerFotoCalidad, buttonDeGaleria, buttonByN, buttonDibujar, buttonGafas;
     ImageView imageView;
     private File fichero;
 
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this,"com.example.cmaraypermisos2021.fileprovider", fichero));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, "com.example.cmaraypermisos2021.fileprovider", fichero));
 
         if (intent.resolveActivity(getPackageManager()) != null) { //Debo permitir la consulta en el android manifest
             startActivityForResult(intent, VENGO_DE_CAMARA_CON_CALIDAD);
@@ -82,14 +86,15 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 imageView.setImageBitmap(BitmapFactory.decodeFile(fichero.getAbsolutePath()));
 
-            }else{
+            } else {
                 fichero.delete();
 
             }
-        } else if (requestCode == VENGO_DE_GALERIA){
+        } else if (requestCode == VENGO_DE_GALERIA) {
             Uri imageUri = data.getData();
             imageView.setImageURI(imageUri);
         }
+
     }
 
     private File crearFicheroFoto() throws IOException {
@@ -114,6 +119,44 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         buttonHacerFotoCalidad = findViewById(R.id.buttonHacerFotoCalidad);
         buttonDeGaleria = findViewById(R.id.buttonGalería);
+        buttonByN = findViewById(R.id.buttonBlancoYNegro);
+        buttonDibujar = findViewById(R.id.buttonDibujar);
+        buttonGafas = findViewById(R.id.buttonGafas);
+
+        buttonGafas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap b = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
+                imageView.setImageBitmap(EfectosBitmap.dibujaGafas(b,((BitmapDrawable)getDrawable(R.drawable.ojos)).getBitmap(), getApplicationContext()));
+            }
+        });
+        buttonByN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap b = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                imageView.setImageBitmap(EfectosBitmap.grayscale(b));
+            }
+        });
+
+        buttonDibujar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap b = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                // Canvas canvas = new Canvas(b); //Esto falla por ser inmutable Necesito una copia
+//Uno nuevo                  Bitmap copy = Bitmap.createBitmap (bitmap.getWidth (), bitmap.getHeight (), Bitmap.Config.ARGB_8888); // importante
+                Bitmap copia = b.copy(b.getConfig(), true);
+                Canvas canvas = new Canvas(copia);
+                Paint pincel = new Paint();
+                pincel.setColor(Color.BLUE);
+                pincel.setStrokeWidth(8);
+                pincel.setStyle(Paint.Style.STROKE);
+                canvas.drawCircle(100, 100, 100, pincel);
+                imageView.setImageBitmap(copia);
+            }
+        });
+
+
 
         buttonDeGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
